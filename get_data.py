@@ -33,7 +33,7 @@ auth.set_access_token(access_token, access_token_secret)
 
 
 api = tweepy.API(auth)
-word_list = ['gay', 'lesbian', 'bi', 'trans']
+word_list = ['gay', 'lesbian', 'bi', 'trans','queer', 'transgender', 'bisexual', 'butch', 'dyke', 'fag', 'faggot', 'homo', 'drag queen', 'drag king', 'tranny', 'transsexual', 'LGBT', 'genderqueer', 'homophobic', 'homophobia', 'homosexual', 'intersex', 'ladyboy', 'lesbo', 'sissy', 'pro-gay', 'anti-gay', 'shemale', 'transvestite', 'sexual minority', 'genderfluid', 'arse bandit', 'homophobia', 'bi-curious', 'butch', 'lezza', 'nancy boy', 'poofta', 'equal marriage', 'equal rights', 'pride parade', 'gaymer', 'gay panic', 'sexual orientation']
 
 word_cnt = Counter(word_list)
 data_file = csv.writer(open("data_file.csv", "wb"))
@@ -66,7 +66,6 @@ def get_geo(postcode):
 	result = pc.get(postcode)
 	return result['geo']['lat'], result['geo']['lng'], result['administrative']['council']['title']
 
-
 if __name__ == '__main__':
     lat, long, place = get_geo(sys.argv[1])
 
@@ -76,7 +75,7 @@ if __name__ == '__main__':
 
     stream = Stream(auth, l)
     try:
-        stream.filter(track=word_list, locations=[long-0.5, lat-0.5,long+0.5, lat+0.5])
+        stream.filter(track=word_list, locations=[long-0.5, lat-0.5,long+0.5, lat+0.5], languages=["en"])
     except KeyboardInterrupt:
         print "\n\nThe folks in %s are:" % place
     
