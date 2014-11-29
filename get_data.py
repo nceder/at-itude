@@ -12,6 +12,7 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import sys
 import os
+import csv
 
 import json
 from collections import Counter
@@ -35,6 +36,7 @@ api = tweepy.API(auth)
 word_list = ['gay', 'lesbian', 'bi', 'trans']
 
 word_cnt = Counter(word_list)
+data_file = csv.writer(open("data_file.csv", "wb"))
 
 class StdOutListener(StreamListener):
     """ A listener handles tweets are the received from the stream.
@@ -51,7 +53,8 @@ class StdOutListener(StreamListener):
             if word.lower() in json_data['text'].lower():
                 word_cnt[word] += 1 
         #print json_data['text'], word_cnt.most_common(3)
-        print json_data['text']
+        print json_data['text'],json_data['lang'],json_data['coordinates'], json_data['possibly_sensitive'],\
+                                          json_data['filter_level'], json_data['geo'], json_data['place']
         
         return True
 
