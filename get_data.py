@@ -20,10 +20,16 @@ from postcodes import PostCoder
 
 # keys from twitter dev program needed
 consumer_key=os.environ['CONSUMER_KEY']
-consumer_secret=os.environ['CONSUMER_SECRET_KEY']
+consumer_secret=os.environ['CONSUMER_SECRET']
 
 access_token=os.environ['ACCESS_TOKEN']
 access_token_secret=os.environ["ACCESS_TOKEN_SECRET"]
+
+
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.secure = True
+auth.set_access_token(access_token, access_token_secret)
+
 
 api = tweepy.API(auth)
 word_list = ['gay', 'lesbian', 'bi', 'trans']
@@ -44,12 +50,19 @@ class StdOutListener(StreamListener):
         for word in word_list:
             if word.lower() in json_data['text'].lower():
                 word_cnt[word] += 1 
-        print json_data['text'], word_cnt.most_common(3)
+        #print json_data['text'], word_cnt.most_common(3)
+        print json_data['text']
         
         return True
 
     def on_error(self, status):
         print status
+
+def get_geo(postcode):
+	pc = PostCoder()
+	result = pc.get(postcode)
+	return result['geo']['lat'], result['geo']['lng'], result['administrative']['council']['title']
+
 
 if __name__ == '__main__':
     lat, long, place = get_geo(sys.argv[1])
