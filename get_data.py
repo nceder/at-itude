@@ -38,9 +38,9 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 word_list = ['gay', 'lesbian', 'bi', 'trans','queer', 'transgender', 'bisexual', 'butch', 'dyke', 'fag', 'faggot', 'homo', 'drag queen', 'drag king', 'tranny', 'transsexual', 'LGBT', 'genderqueer', 'homophobic', 'homophobia', 'homosexual', 'intersex', 'ladyboy', 'lesbo', 'sissy', 'pro-gay', 'anti-gay', 'shemale', 'transvestite', 'sexual minority', 'genderfluid', 'arse bandit', 'homophobia', 'bi-curious', 'butch', 'lezza', 'nancy boy', 'poofta', 'equal marriage', 'equal rights', 'pride parade', 'gaymer', 'gay panic', 'sexual orientation']
-
+word_list = ['girl', 'woman', 'women', 'girls']
 word_cnt = Counter(word_list)
-data_file = csv.writer(open("data_file.csv", "ab"))
+data_file = csv.writer(open("data_file_w.csv", "ab"))
 
 class StdOutListener(StreamListener):
     """ A listener handles tweets are the received from the stream.
@@ -49,13 +49,15 @@ class StdOutListener(StreamListener):
     """
     def on_data(self, data):
         json_data = json.loads(data)
-        print json_data
-        if 'text' not in json_data or 'geo' not in json_data or not json_data['geo']:
+        #print json_data['text'], json_data['geo'], json_data['coordinates']
+        # print json_data
+        if 'text' not in json_data or (('geo' not in json_data or not json_data['geo']) and 'coordinates' not in json_data):
             return True
         if json_data['text'].startswith("RT") or json_data['lang'] != "en":
             return True
-        if 'country' in json_data['geo'] and json_data['geo']['country'] != "United Kingdom":
-            return True
+        #if 'country' not in json_data['geo'] or json_data['geo']['country_code'] != "UK":
+        #if 'country' not in json_data['geo']:
+        #    return True
         for word in word_list:
             if word.lower() in json_data['text'].lower():
                 word_cnt[word] += 1 
@@ -74,7 +76,7 @@ def get_geo(postcode):
 	return result['geo']['lat'], result['geo']['lng'], result['administrative']['council']['title']
 
 if __name__ == '__main__':
-    #lat, long, place = get_geo(sys.argv[1])
+    lat, long, place =  get_geo("EC1V 4LF")
 
     l = StdOutListener()
     auth = OAuthHandler(consumer_key, consumer_secret)
@@ -82,9 +84,12 @@ if __name__ == '__main__':
 
     stream = Stream(auth, l)
     try:
-        # stream.filter(track=word_list, locations=[long-0.5, lat-0.5,long+0.5, lat+0.5], languages=["en"])
-        stream.filter(track=word_list)
-        # , locations=[-5.552, 58.8,1.556, 50.145], languages=["en"])
+        #stream.filter(track=word_list, languages=["en"])
+        #stream.filter(track=word_list, locations=[long-0.5, lat-0.5,long+0.5, lat+0.5], languages=["en"])
+        stream.filter(locations=[long-2.0, lat-2.0,long+2.0, lat+2.0], languages=["en"])
+        # stream.filter(track=word_list,languages=["en"])
+
+        # locations=[0.29500000, 51.28400000,-0.71300000, 51.82500000], 
     except KeyboardInterrupt:
         print "\n\nRun ended"
     
